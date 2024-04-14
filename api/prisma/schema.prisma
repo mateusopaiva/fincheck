@@ -63,17 +63,17 @@ model Category {
 }
 
 model Transaction {
-  id             String          @id @default(uuid()) @db.Uuid
-  userId         String          @map("user_id") @db.Uuid
-  banckAccountId String          @map("bank_account_id") @db.Uuid
-  categoryId     String?         @map("category_id") @db.Uuid
-  name           String
-  value          Float
-  date           DateTime
-  type           TransactionType
+  id            String          @id @default(uuid()) @db.Uuid
+  userId        String          @map("user_id") @db.Uuid
+  bankAccountId String          @map("bank_account_id") @db.Uuid
+  categoryId    String?         @map("category_id") @db.Uuid
+  name          String
+  value         Float
+  date          DateTime
+  type          TransactionType
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bankAccount BankAccount @relation(fields: [banckAccountId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
   category    Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@map("transactions")
