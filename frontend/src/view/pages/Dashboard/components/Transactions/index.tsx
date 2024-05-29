@@ -1,5 +1,3 @@
-import { ChevronDownIcon } from "@radix-ui/react-icons";
-import { TransactionsIcon } from "../../../../components/icons/TransactionsIcon";
 import { FilterIcon } from "../../../../components/icons/FilterIcon";
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { MONTHS } from "../../../../../app/config/constants";
@@ -11,9 +9,19 @@ import { useTransactionsController } from "./useTransactionsController";
 import { cn } from "../../../../../app/utils/cn";
 import { Spinner } from "../../../../components/Spinner";
 import emptyStateImage from "../../../../../assets/empty-state.svg";
+import { TransactionTypeDropdown } from "./TransactionTypeDropdown";
+import { FiltersModal } from "./FiltersModal";
 
 export function Transactions() {
-  const { areValuesVisible, isInitialLoading, isLoading, transactions } = useTransactionsController();
+  const {
+    areValuesVisible,
+    isInitialLoading,
+    isLoading,
+    transactions,
+    isFiltersModalOpen,
+    handleOpenFilterModal,
+    handleCloseFilterModal,
+  } = useTransactionsController();
 
   const hasTransactions = transactions.length > 0;
 
@@ -27,42 +35,40 @@ export function Transactions() {
 
       {!isInitialLoading && (
         <>
+          <FiltersModal
+            open={isFiltersModalOpen}
+            onClose={handleCloseFilterModal}
+          />
+
           <header>
-        <div className="flex items-center justify-between">
-          <button className="flex items-center gap-2">
-            <TransactionsIcon />
-            <span className="text-sm text-gray-800 tracking-[-0.5px] font-medium">
-              Transações
-            </span>
-            <ChevronDownIcon className="text-gray-900"/>
-          </button>
+            <div className="flex items-center justify-between">
+              <TransactionTypeDropdown />
 
-          <button>
-            <FilterIcon />
-          </button>
-        </div>
+              <button onClick={handleOpenFilterModal}>
+                <FilterIcon />
+              </button>
+            </div>
 
-        <div className="mt-6 relative">
-          <Swiper
-            slidesPerView={3}
-            centeredSlides
-          >
-            <SliderNavigation />
-            {MONTHS.map((month, index) => (
-              <SwiperSlide key={month}>
-                {({ isActive }) => (
-                  <SliderOption
-                    isActive={isActive}
-                    month={month}
-                    index={index}
-                    />
-                )}
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-
-      </header>
+            <div className="mt-6 relative">
+              <Swiper
+                slidesPerView={3}
+                centeredSlides
+              >
+                <SliderNavigation />
+                {MONTHS.map((month, index) => (
+                  <SwiperSlide key={month}>
+                    {({ isActive }) => (
+                      <SliderOption
+                        isActive={isActive}
+                        month={month}
+                        index={index}
+                        />
+                    )}
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </header>
 
       <div className="mt-4 space-y-2 flex-1">
         {isLoading && (
@@ -70,7 +76,7 @@ export function Transactions() {
             <Spinner className="w-10 h-10" />
           </div>
         )}
-        
+
         {(!hasTransactions && !isLoading) && (
           <div className="flex flex-col items-center justify-center h-full">
             <img src={emptyStateImage} alt="Empty State"/>
