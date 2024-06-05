@@ -6,7 +6,7 @@ export interface SigninParams {
 }
 
 interface SigninResponse {
-  accessToken: string
+  accessToken: string;
 }
 
 export async function signin(params: SigninParams) {

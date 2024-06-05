@@ -30,6 +30,7 @@ export const  Input = forwardRef<HTMLInputElement, InputProps>(
           htmlFor={inputId}
           //className="absolute left-[13px] top-3.5 pointer-events-none text-gray-700"
           className="absolute text-xs left-[13px] top-2 pointer-events-none text-gray-700 peer-placeholder-shown:text-base peer-placeholder-shown:top-3.5 transition-all"
+          
         >
           {placeholder}
         </label>
