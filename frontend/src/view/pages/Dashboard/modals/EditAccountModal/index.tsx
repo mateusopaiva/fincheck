@@ -5,7 +5,9 @@ import { Input } from "../../../../components/Input";
 import { InputCurrency } from "../../../../components/InputCurrency";
 import { Modal } from "../../../../components/Modal";
 import { Select } from "../../../../components/Select";
-import { useNewAccountModalController } from "./useNewAccountModalController";
+import { useEditAccountModalController } from "./useEditAccountModalController";
+import { TrashIcon } from "../../../../components/icons/TrashIcon";
+import { ConfirmDeleteModal } from "../../../../components/ConfirmDeleteModal";
 
 export function EditAccountModal() {
   const {
@@ -16,13 +18,34 @@ export function EditAccountModal() {
     register,
     control,
     isPending,
-   } = useNewAccountModalController();
+    isDeleteModalOpen,
+    handleOpenDeleteModal,
+    handleCloseDeleteModal,
+    handleDeleteAccount,
+    isLoadingDelete,
+   } = useEditAccountModalController();
+
+   if(isDeleteModalOpen) {
+    return (
+      <ConfirmDeleteModal
+        isLoading={isLoadingDelete}
+        onConfirm={handleDeleteAccount}
+        onClose={handleCloseDeleteModal}
+        title="Tem certeza que deseja excluir esta conta?"
+        description="Ao excluir  conta, também serão excluídos todos os registros de receita e despesas relacionados"
+      />
+   )}
 
   return (
     <Modal
       title="Editar Conta"
       open={isEditAccountModalOpen}
       onClose={closeEditAccountModal}
+      rightAction={
+        <button onClick={handleOpenDeleteModal}>
+          <TrashIcon className="w-6 h-6 text-red-900" />
+        </button>
+      }
     >
       <form onSubmit={handleSubmit}>
         <div>
@@ -33,7 +56,7 @@ export function EditAccountModal() {
             <Controller
               control={control}
               name="initialBalance"
-              defaultValue="0"
+              defaultValue={0}
               render={({ field: { onChange, value } }) => (
                 <InputCurrency
                   error={errors.initialBalance?.message}
@@ -69,7 +92,7 @@ export function EditAccountModal() {
                       label: 'Conta Corrente',
                     },
                     {
-                      value: 'INVESTIMENT',
+                      value: 'INVESTMENT',
                       label: 'Investimentos',
                     },
                     {
@@ -96,8 +119,8 @@ export function EditAccountModal() {
             />
         </div>
 
-        <Button className="w-full mt-6" isPending={isPending}>
-          Criar
+        <Button type="submit" className="w-full mt-6" isPending={isPending}>
+          Salvar
         </Button>
       </form>
     </Modal>

@@ -8,10 +8,17 @@ import { DatePicker } from "../../../components/DatePicker";
 interface DatePickerInputProps {
   error?: string;
   className?: string;
+  value?: Date;
+  onChange?(date: Date): void;
 }
 
-export function DatePickerInput({ className, error }: DatePickerInputProps) {
-  const [selectedDate, setSelectSingleContext] = useState(new Date());
+export function DatePickerInput({ className, error, value, onChange}: DatePickerInputProps) {
+  const [selectedDate, setSelectSingleContext] = useState(value ?? new Date());
+
+  function handleChangeDate(date: Date) {
+    setSelectSingleContext(date);
+    onChange?.(date);
+  }
 
   return (
     <div>
@@ -37,7 +44,7 @@ export function DatePickerInput({ className, error }: DatePickerInputProps) {
         <Popover.Content>
           <DatePicker
             value={selectedDate}
-            onChange={date => setSelectSingleContext(date)}
+            onChange={handleChangeDate}
           />
         </Popover.Content>
       </Popover.Root>

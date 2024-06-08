@@ -38,7 +38,7 @@ export function useNewAccountModalController() {
     mutationFn: bankAccountsService.create,
   };
 
-  const QueryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const { isPending, mutateAsync } = useMutation(mutationOptions);
 
   const handleSubmit = hookFormSubmit(async (data) => {
@@ -48,7 +48,7 @@ export function useNewAccountModalController() {
         initialBalance: currencyStringToNumber(data.initialBalance),
       })
 
-      QueryClient.invalidateQueries({ queryKey:['bankAccounts'] });
+      queryClient.invalidateQueries({ queryKey:['bankAccounts'] });
       toast.success('Conta foi cadastrada com sucesso!');
       closeNewAccountModal();
       reset();
