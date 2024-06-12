@@ -1,17 +1,23 @@
 import { Controller } from "react-hook-form";
+import { Transaction } from "../../../../../app/entities/Transaction";
 import { Button } from "../../../../components/Button";
 import { Input } from "../../../../components/Input";
 import { InputCurrency } from "../../../../components/InputCurrency";
 import { Modal } from "../../../../components/Modal";
 import { Select } from "../../../../components/Select";
-import { useNewTransactionModalController } from "./useNewTransactionModalController";
+import { useEditTransactionModalController } from "./useEditTransactionModalController";
 import { DatePickerInput } from "../../../../components/DatePickerInput";
+import { ConfirmDeleteModal } from "../../../../components/ConfirmDeleteModal";
+import { TrashIcon } from "../../../../components/icons/TrashIcon";
 
-export function NewTransactionModal() {
+interface EditTransactionModalProps {
+  open: boolean;
+  onClose(): void;
+  transaction: Transaction | null;
+}
+
+export function EditTransactionModal({ transaction, onClose, open }: EditTransactionModalProps) {
   const {
-    closeNewTransactionModal,
-    isNewTransactionModalOpen,
-    newTransactionType,
     control,
     errors,
     handleSubmit,
@@ -19,15 +25,35 @@ export function NewTransactionModal() {
     accounts,
     categories,
     isPending,
-     } = useNewTransactionModalController();
+    isDeleteModalOpen,
+    isLoadingDelete,
+    handleDeleteTransaction,
+    handleOpenDeleteModal,
+    handleCloseDeleteModal,
+  } = useEditTransactionModalController(transaction, onClose);
 
-    const isExpense = newTransactionType === 'EXPENSE'
+  const isExpense = transaction?.type === 'EXPENSE';
+
+  if(isDeleteModalOpen) {
+    return (
+      <ConfirmDeleteModal
+        isLoading={isLoadingDelete}
+        onConfirm={handleDeleteTransaction}
+        onClose={handleCloseDeleteModal}
+        title={`Tem certeza que deseja excluir esta ${isExpense ? 'despesa' : 'receita'}?`}
+      />
+   )}
 
   return (
     <Modal
-      title={isExpense ? 'Nova Despesa' : 'Nova Receita'}
-      open={isNewTransactionModalOpen}
-      onClose={closeNewTransactionModal}
+      title={isExpense ? 'Editar Despesa' : 'Editar Receita'}
+      open={open}
+      onClose={onClose}
+      rightAction={
+        <button onClick={handleOpenDeleteModal}>
+          <TrashIcon className="w-6 h-6 text-red-900" />
+        </button>
+      }
     >
       <form onSubmit={handleSubmit}>
         <div>
@@ -47,7 +73,7 @@ export function NewTransactionModal() {
                   value={value}
                 />
               )}
-              />
+            />
           </div>
         </div>
 
@@ -59,23 +85,23 @@ export function NewTransactionModal() {
             {...register('name')}
           />
 
-            <Controller
-              control={control}
-              name="categoryId"
-              defaultValue=""
-              render={({ field: { onChange, value } }) =>(
-                <Select
-                  placeholder="Categoria"
-                  onChange={onChange}
-                  value={value}
-                  error={errors.categoryId?.message}
-                  options={categories.map(category => ({
-                    value: category.id,
-                    label: category.name,
-                  }))}
-                />
-              )}
-            />
+          <Controller
+            control={control}
+            name="categoryId"
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <Select
+                placeholder="Categoria"
+                onChange={onChange}
+                value={value}
+                error={errors.categoryId?.message}
+                options={categories.map(category => ({
+                  value: category.id,
+                  label: category.name,
+                }))}
+              />
+            )}
+          />
 
           <Controller
             control={control}
@@ -99,7 +125,7 @@ export function NewTransactionModal() {
             control={control}
             name="date"
             defaultValue={new Date()}
-            render={({ field: { value, onChange  } }) => (
+            render={({ field: { value, onChange } }) => (
               <DatePickerInput
                 error={errors.date?.message}
                 value={value}
@@ -109,8 +135,8 @@ export function NewTransactionModal() {
           />
         </div>
 
-        <Button type='submit' className="w-full mt-6" isPending={isPending}>
-          Criar
+        <Button type="submit" className="w-full mt-6" isPending={isPending}>
+          Salvar
         </Button>
       </form>
     </Modal>

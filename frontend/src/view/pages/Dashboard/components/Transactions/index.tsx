@@ -11,6 +11,8 @@ import { Spinner } from "../../../../components/Spinner";
 import emptyStateImage from "../../../../../assets/empty-state.svg";
 import { TransactionTypeDropdown } from "./TransactionTypeDropdown";
 import { FiltersModal } from "./FiltersModal";
+import { formatDate } from "../../../../../app/utils/formateDate";
+import { EditTransactionModal } from "../../modals/EditTransactionModal";
 
 export function Transactions() {
   const {
@@ -21,6 +23,13 @@ export function Transactions() {
     isFiltersModalOpen,
     handleOpenFilterModal,
     handleCloseFilterModal,
+    handleChangeFilters,
+    filters,
+    handleApplyFilters,
+    handleOpenEditModal,
+    handleCloseEditModal,
+    isEditModalOpen,
+    transactionBeingEdited,
   } = useTransactionsController();
 
   const hasTransactions = transactions.length > 0;
@@ -38,11 +47,15 @@ export function Transactions() {
           <FiltersModal
             open={isFiltersModalOpen}
             onClose={handleCloseFilterModal}
+            onApplyFilters={handleApplyFilters}
           />
 
           <header>
             <div className="flex items-center justify-between">
-              <TransactionTypeDropdown />
+              <TransactionTypeDropdown
+                onSelect={handleChangeFilters('type')}
+                selectedType={filters.type}
+              />
 
               <button onClick={handleOpenFilterModal}>
                 <FilterIcon />
@@ -53,6 +66,10 @@ export function Transactions() {
               <Swiper
                 slidesPerView={3}
                 centeredSlides
+                initialSlide={filters.month}
+                onSlideChange={swiper => {
+                  handleChangeFilters('month')(swiper.realIndex);
+                }}
               >
                 <SliderNavigation />
                 {MONTHS.map((month, index) => (
@@ -86,48 +103,50 @@ export function Transactions() {
 
         {(hasTransactions && !isLoading) && (
           <>
-            <div className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4">
-            <div className="flex-1 flex items-center gap-3">
-              <CategoryIcon type="expense"/>
+            {transactionBeingEdited && (
+              <EditTransactionModal
+                open={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                transaction={transactionBeingEdited}
+              />
+            )}
 
-              <div>
-                <strong className="font-bold tracking-[-0.5px] block">Almoço</strong>
-                <span className="text-sm text-gray-600">04/06/2023</span>
+            {transactions.map(transaction => (
+              <div
+                key={transaction.id}
+                className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4"
+                role="button"
+                onClick={() => handleOpenEditModal(transaction)}
+              >
+                <div className="flex-1 flex items-center gap-3">
+                  <CategoryIcon
+                    type={transaction.type === 'EXPENSE' ? 'expense' : 'income'}
+                    category={transaction.category?.icon}
+                />
+                <div>
+                    <strong className="font-bold tracking-[-0.5px] block">
+                      {transaction.name}
+                    </strong>
+                    <span className="text-sm text-gray-600">
+                      {formatDate(new Date(transaction.date))}
+                    </span>
+                  </div>
+                </div>
+                <span
+                  className={cn(
+                    "translate-[-0.5px] font-medium",
+                    transaction.type === 'EXPENSE' ? 'text-red-800' : 'text-green-800',
+                    !areValuesVisible && 'blur-sm',
+                )}
+                >
+                  {transaction.type === 'EXPENSE' ? '-' : '+'}
+                  {formatCurrency(transaction.value)}
+                </span>
               </div>
-            </div>
-
-            <span
-              className={cn(
-                "text-red-800 translate-[-0.5px] font-medium",
-                !areValuesVisible && 'blur-sm',
-              )}
-            >
-              -{formatCurrency(123)}
-              </span>
-          </div>
-
-          <div className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4">
-            <div className="flex-1 flex items-center gap-3">
-              <CategoryIcon type="income"/>
-
-              <div>
-                <strong className="font-bold tracking-[-0.5px] block">Salario</strong>
-                <span className="text-sm text-gray-600">04/06/2023</span>
-              </div>
-            </div>
-
-            <span
-              className={cn(
-                "text-green-800 translate-[-0.5px] font-medium",
-                !areValuesVisible && 'blur-sm',
-              )}
-            >
-              {formatCurrency(2500)}
-            </span>
-          </div>
-            </>
-          )}
-        </div>
+            ))}
+          </>
+        )}
+      </div>
       </>
       )}
     </div>

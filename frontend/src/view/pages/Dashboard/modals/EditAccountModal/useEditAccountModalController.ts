@@ -55,7 +55,7 @@ export function useEditAccountModalController() {
     mutationFn: bankAccountsService.remove,
   };
 
-  const QueryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     isPending,
@@ -75,7 +75,7 @@ export function useEditAccountModalController() {
         id: accountBeingEdited!.id,
       })
 
-      QueryClient.invalidateQueries({ queryKey:['bankAccounts'] });
+      queryClient.invalidateQueries({ queryKey:['bankAccounts'] });
       toast.success('A conta foi editada com sucesso!');
       closeEditAccountModal();
     } catch {
@@ -95,7 +95,7 @@ export function useEditAccountModalController() {
     try {
       await removeAccount(accountBeingEdited!.id)
 
-      QueryClient.invalidateQueries({ queryKey:['bankAccounts'] });
+      queryClient.invalidateQueries({ queryKey:['bankAccounts'] });
       toast.success('A conta foi deletada com sucesso!');
       closeEditAccountModal();
     } catch {

@@ -1,9 +1,9 @@
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { cn } from "../../../../app/utils/cn";
 import { useState } from "react";
-import { formatDate } from "../../../../app/utils/formateDate";
-import { Popover } from "../../../components/Popover";
-import { DatePicker } from "../../../components/DatePicker";
+import { cn } from "../../app/utils/cn";
+import { DatePicker } from "./DatePicker";
+import { Popover } from "./Popover";
+import { formatDate } from "../../app/utils/formateDate";
 
 interface DatePickerInputProps {
   error?: string;
@@ -12,11 +12,11 @@ interface DatePickerInputProps {
   onChange?(date: Date): void;
 }
 
-export function DatePickerInput({ className, error, value, onChange}: DatePickerInputProps) {
-  const [selectedDate, setSelectSingleContext] = useState(value ?? new Date());
+export function DatePickerInput({ className, value, onChange, error }: DatePickerInputProps) {
+  const [selectedDate, setSelectedDate] = useState(value ?? new Date());
 
   function handleChangeDate(date: Date) {
-    setSelectSingleContext(date);
+    setSelectedDate(date);
     onChange?.(date);
   }
 
@@ -27,7 +27,7 @@ export function DatePickerInput({ className, error, value, onChange}: DatePicker
           <button
             type="button"
             className={cn(
-              'bg-white w-full rounded-lg border border-gray-500 px-3 h-[52px] text-gray-700  focus:border-gray-800 transition-none outline-none text-left relative pt-4',
+              'bg-white w-full rounded-lg border border-gray-500 px-3 h-[52px] text-gray-700 focus:border-gray-800 transition-all outline-none text-left relative pt-4',
               error && '!border-red-900',
               className,
             )}
@@ -49,11 +49,10 @@ export function DatePickerInput({ className, error, value, onChange}: DatePicker
         </Popover.Content>
       </Popover.Root>
 
-
       {error && (
         <div className="flex gap-2 items-center mt-2 text-red-900">
           <CrossCircledIcon />
-          <span className=" text-xs">{error}</span>
+          <span className="text-xs">{error}</span>
         </div>
       )}
     </div>
