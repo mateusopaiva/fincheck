@@ -41,7 +41,7 @@ const schema = z.object({
           name: transaction?.name,
           value: transaction?.value,
           date: transaction ? new Date(transaction.date) : new Date(),
-        }
+        },
     });
 
   const { accounts } = useBankAccounts();
@@ -70,7 +70,7 @@ const schema = z.object({
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleSubmit = hookFormSubmit(async data => {
+  const handleSubmit = hookFormSubmit(async (data) => {
     try {
       await updateTransaction({
         ...data,
@@ -80,7 +80,7 @@ const schema = z.object({
         date: data.date.toISOString(),
       });
 
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey:['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['bankAccounts'] });
 
       toast.success(
@@ -90,7 +90,7 @@ const schema = z.object({
       );
       onClose();
     } catch (error) {
-      console.log('Erro ao salvar a transação:', error); // Logando o erro no console
+      console.log('Erro ao salvar a transação:', error);
       toast.error(
         transaction!.type === 'EXPENSE'
           ? 'Erro ao salvar a despesa!'
@@ -109,14 +109,15 @@ const schema = z.object({
 
       queryClient.invalidateQueries({ queryKey:['transactions'] });
       queryClient.invalidateQueries({ queryKey:['bankAccounts'] });
-      
+
       toast.success(
         transaction!.type === 'EXPENSE'
           ? 'A despesa foi deletada com sucesso!'
           : 'A receita foi deletada com sucesso!'
         );
       onClose();
-    } catch {
+    } catch(error) {
+      console.log('Erro ao deletar a transação:', error);
       toast.error(
         transaction!.type === 'EXPENSE'
         ? 'Erro ao deletar a despesa!'

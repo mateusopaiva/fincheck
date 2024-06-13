@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ValidateBankAccountOwnershipService } from 'src/modules/bank-accounts/services/validate-bank-account-ownership.service';
+import { TransactionsRepository } from 'src/shared/database/repositories/transactions.repository';
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { UpdateTransactionDto } from '../dto/update-transaction.dto';
-import { TransactionsRepository } from 'src/shared/database/repositories/transactions.repository';
-import { ValidateBankAccountOwnershipService } from 'src/modules/bank-accounts/services/validate-bank-account-owership.service';
-import { ValidateCategoryOwnershipService } from 'src/modules/categories/services/validate-category-owership.service';
-import { ValidateTransactionOwnershipService } from './validate-transaction-owership.service';
-import { TransactionType } from '../entities/transaction';
+import { TransactionType } from '../entities/Transaction';
+import { ValidateTransactionOwnershipService } from './validate-transaction-ownership.service';
+import { ValidateCategoryOwnershipService } from 'src/modules/categories/services/validate-category-ownership.service';
 
 @Injectable()
 export class TransactionsService {
@@ -48,7 +48,6 @@ export class TransactionsService {
       type?: TransactionType;
     },
   ) {
-    console.log({ filters });
     return this.transactionsRepo.findMany({
       where: {
         userId,
@@ -122,7 +121,7 @@ export class TransactionsService {
   }) {
     await Promise.all([
       transactionId &&
-        this.validateBankAccountOwnershipService.validate(
+        this.validateTransactionOwnershipService.validate(
           userId,
           transactionId,
         ),

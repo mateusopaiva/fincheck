@@ -13,5 +13,5 @@ export function useTransactions(filters: TransactionsFilters) {
     isLoading :isFetching,
     isInitialLoading: isLoading ,
     refetchTransactions: refetch,
-  }
+  };
 }

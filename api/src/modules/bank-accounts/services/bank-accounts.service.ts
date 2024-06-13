@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateBankAccountDto } from '../dto/create-bank-account.dto';
 import { UpdateBankAccountDto } from '../dto/update-bank-account.dto';
 import { BankAccountsRepository } from 'src/shared/database/repositories/bank-accounts.repositories';
-import { ValidateBankAccountOwnershipService } from './validate-bank-account-owership.service';
+import { ValidateBankAccountOwnershipService } from './validate-bank-account-ownership.service';
 
 @Injectable()
 export class BankAccountsService {
@@ -51,7 +51,6 @@ export class BankAccountsService {
       const currentBalance = bankAccount.initialBalance + totalTransactions;
 
       return {
-        totalTransactions,
         ...bankAccount,
         currentBalance,
       };
@@ -72,7 +71,12 @@ export class BankAccountsService {
 
     return this.bankAccountsRepo.update({
       where: { id: bankAccountId },
-      data: { color, initialBalance, name, type },
+      data: {
+        color,
+        initialBalance,
+        name,
+        type,
+      },
     });
   }
 
